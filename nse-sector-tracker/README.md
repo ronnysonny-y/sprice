@@ -2,6 +2,38 @@
 
 A clean full-stack starter running on [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and Drizzle support.
 
+## Deploying to Vercel
+
+Set the Vercel project's **Root Directory** to `nse-sector-tracker` (the folder
+containing this README, `package.json`, and `vercel.json`). Use the **Next.js**
+framework preset and Node.js **22.x** or newer supported by Vercel.
+
+The checked-in `vercel.json` selects `npm run build:vercel`, which runs the native
+Next.js production build and writes `.next`, including `routes-manifest.json`.
+Keep the install command at its default. Redeploy after committing these files.
+If deploying through the Vercel CLI, run it from this folder.
+
+To reproduce the Vercel build locally:
+
+```sh
+npm ci
+npm run build:vercel
+npm run start:next
+```
+
+Use `npm run dev:next` for local development with Next.js.
+
+`npm run build` and `npm start` remain the separate Vinext/Cloudflare Sites
+workflow described below. Vinext produces `dist/`, not the Next.js build artifact
+that Vercel's Next.js preset requires. Changing the output directory to `dist`
+does not make a Cloudflare Worker deployable through that preset. The Vinext
+"Unknown" route-classification message is informational; the missing Next.js
+manifest is caused by running the wrong build for the deployment target.
+
+Cloudflare Worker bindings (D1/R2), Sites connectors, and dispatch-owned ChatGPT
+sign-in require the Sites runtime; native Next.js on Vercel does not provide them.
+The current homepage uses none of those services.
+
 ## Prerequisites
 
 - Node.js `>=22.13.0`
