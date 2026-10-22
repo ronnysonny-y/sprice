@@ -59,6 +59,7 @@
   }
 
   function render() {
+    window.SectorMarket?.cancel();
     const route = location.hash.slice(1).split('/');
     const sector = byId.get(route[1]);
     if ((route[0] === 'timeline' || route[0] === 'stocks') && sector) {
@@ -70,7 +71,8 @@
       } else {
         progress(3);
         const period = periods.find(item => item[0] === selectedPeriod);
-        page.innerHTML = `<button type="button" class="back" data-action="timeline">← Change timeline</button><span class="selected-chip">${escape(sector.name)} · ${period[1]}</span><div class="intro"><div><span class="eyebrow">YOUR MARKET PERSPECTIVE</span><h1 id="page-title" tabindex="-1">Explore <em>${escape(sector.name)}.</em></h1></div></div><div class="status-box"><h2>Official prices are not connected yet</h2><p>Your sector and timeline are selected. This checkout does not yet have a stock data service, so verified prices and a top-15 ranking cannot be displayed.</p><div class="status-actions"><a class="secondary" href="https://www.nseindia.com/market-data/live-equity-market" target="_blank" rel="noopener">View official NSE market data ↗</a><button type="button" class="secondary" data-action="sectors">Choose another sector</button></div></div>`;
+        page.innerHTML = `<button type="button" class="back" data-action="timeline">← Change timeline</button><span class="selected-chip">${escape(sector.name)} · ${period[1]}</span><div class="intro"><div><span class="eyebrow">YOUR MARKET PERSPECTIVE</span><h1 id="page-title" tabindex="-1">Explore <em>${escape(sector.name)}.</em></h1><p>The sector’s leaders. The story behind every close.</p></div></div><section id="stock-results" aria-label="Stock closing prices"></section>`;
+        void window.SectorMarket.load(sector,Number(selectedPeriod));
       }
     } else {
       currentSector = null;
@@ -91,6 +93,9 @@
     else if (button.dataset.action === 'sectors') navigate('#sectors');
     else if (button.dataset.action === 'timeline') navigate(`#timeline/${currentSector.id}/${selectedPeriod}`);
     else if (button.dataset.action === 'stocks') navigate(`#stocks/${currentSector.id}/${selectedPeriod}`);
+    else if (button.dataset.action === 'refresh-prices') void window.SectorMarket.load(currentSector,Number(selectedPeriod));
+    else if (button.dataset.action === 'export-prices') window.SectorMarket.exportPrices();
+    else if (button.dataset.retryStock) window.SectorMarket.retry(button.dataset.retryStock);
     else if (button.dataset.action === 'about') { event.preventDefault(); dialog.showModal(); }
   });
   page.addEventListener('input', event => { if (event.target.id === 'sector-search') filterCards(); });
