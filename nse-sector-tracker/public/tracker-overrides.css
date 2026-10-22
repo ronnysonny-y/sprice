@@ -1,0 +1,9 @@
+/* Keep native hidden states effective when the cards have layout styles. */
+[hidden] { display: none !important; }
+.secondary { text-decoration: none; display: inline-block; }
+.sector-card h3 { color: #41364f; }
+.sector-card p, .card-kind { color: #7d6f8b; }
+.intro p, .under-grid { color: #7e738c; }
+.sector-card { min-height: 160px; }
+.sector-card h3 { font-size: 12px; }
+#page-title:focus { outline: none; }
