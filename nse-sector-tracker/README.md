@@ -2,6 +2,40 @@
 
 A clean full-stack starter running on [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and Drizzle support.
 
+## Share-price data
+
+The third page loads `/api/stocks?sector=it` to rank up to 15 stocks, then loads
+`/api/stocks?symbol=TCS&days=30` for each stock's historical closes. Supported
+periods are 1, 7, 30, 90, 180, and 365 calendar days. No API key is required.
+Run the application server or deploy the full Next.js app; opening the HTML file
+directly cannot run the API.
+
+- The 22 sectors use the official **Nifty Total Market** constituent CSV. The ten
+  industry buttons use their named official Nifty index constituent lists; the
+  results page identifies the exact universe. These lists do not cover every NSE
+  listing or every company in an industry.
+- Rankings use total market capitalisation in rupees from the latest available
+  NSE daily `PRddmmyy.zip` market-cap report. The report date is displayed. Missing
+  market caps are disclosed rather than estimated. Some groups have fewer than
+  15 constituents.
+- Closing prices and previous closes come from NSE's historical equity endpoint,
+  using `series=EQ` in windows of at most 90 days. Exchange session dates are
+  interpreted in Indian time. Prices are as reported, without corporate-action
+  adjustment. Daily percentage change compares with the actual previous session,
+  even when that session is omitted from the display.
+- At most 30 prices are displayed per stock. The sampling interval is
+  `ceil(calendar days / 30)` trading sessions, counted back from the latest close.
+  Period returns use the first and last actual sessions within the range, not the
+  first sampled point. The one-day view uses the latest completed session.
+- Successful reports are cached briefly. Upstream requests have timeouts and
+  bounded concurrency. A failed stock can be retried individually; errors are
+  never replaced with sample prices. NSE access may vary by hosting region/IP.
+- The results page supports CSV export of successfully loaded displayed prices,
+  including dates, percentage changes, and source URLs.
+
+Run `npm test` for the data parsing, date, sampling, ranking, caching, and source
+request tests. The site uses a CSS aurora backdrop with reduced-motion support.
+
 ## Deploying to Vercel
 
 Set the Vercel project's **Root Directory** to `nse-sector-tracker` (the folder

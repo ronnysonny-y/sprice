@@ -192,7 +192,7 @@ export async function loadMarketCaps() {
 
 function canonical(text) { return text.toLowerCase().replace(/and/g,'&').replace(/[^a-z0-9]/g,''); }
 export async function getSectorStocks(id) {
-  const definition = sectorDefinitions[id];
+  const definition = Object.hasOwn(sectorDefinitions, id) ? sectorDefinitions[id] : null;
   if (!definition) throw new MarketError('Choose a valid sector.', 400);
   const [universe, report] = await Promise.all([loadConstituents(definition.file), loadMarketCaps()]);
   const candidates = definition.file ? universe.stocks : universe.stocks.filter(s => canonical(s.sector) === canonical(definition.sector));
